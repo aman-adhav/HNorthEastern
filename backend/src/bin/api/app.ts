@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as cors from 'cors';
 
 import { Firestore } from '@google-cloud/firestore';
+import { Storage } from '@google-cloud/storage';
 
 import {
   notFoundErrorHandler,
@@ -9,30 +10,49 @@ import {
   finalErrorHandler,
 } from '../../lib/middlewares/error';
 
+import { QRCodeService } from '../../core/qrcode/service/qrcode.service';
+import { QRCodeRepository } from '../../core/qrcode/repository/gcs/qrcode.repository';
+
+import { SocialRepository } from '../../core/social/repository/firestore/social.repository';
+
 import { ProfileService } from '../../core/profile/service/profile.service';
 import { ProfileRepository } from '../../core/profile/repository/firestore/profile.repository';
 import { ProfileHandler } from '../../core/profile/delivery/http/profile.handler';
 
 const firestore = new Firestore();
+const storage = new Storage();
 
-const pr = new ProfileRepository(firestore);
-const ps = new ProfileService(pr);
-const ph = new ProfileHandler(ps);
+const init = async (): Promise<express.Express> => {
+  const qrr = new QRCodeRepository(storage);
+  const qrs = new QRCodeService(qrr);
+  await qrs.init();
 
-const app = express();
+  const sr = new SocialRepository(firestore);
 
-app.set('env', process.env.NODE_ENV);
+  const pr = new ProfileRepository(firestore, sr);
+  const ps = new ProfileService(pr, qrs);
+  const ph = new ProfileHandler(ps);
 
-app.set('trust proxy', true);
+  const app = express();
 
-app.use(cors());
+  app.set('env', process.env.NODE_ENV);
 
-app.use('/profiles', ph.router());
+  app.set('trust proxy', true);
 
-app.use(notFoundErrorHandler);
+  app.use(cors());
 
-app.use(errorDecorator);
+  app.use(express.urlencoded({ extended: true }));
+  app.use(express.json());
 
-app.use(finalErrorHandler);
+  app.use('/profiles', ph.router());
 
-export default app;
+  app.use(notFoundErrorHandler);
+
+  app.use(errorDecorator);
+
+  app.use(finalErrorHandler);
+
+  return app;
+};
+
+export default init();
