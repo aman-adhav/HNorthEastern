@@ -1,13 +1,11 @@
 {
   "compilerOptions": {
+    "lib": ["es2018"],
     "target": "es2018",
     "module": "commonjs",
-    "outDir": "./lib",
+    "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
-    "esModuleInterop": true
-  },
-  "exclude": [
-    "test"
-  ]
+    "moduleResolution": "node"
+  }
 }
