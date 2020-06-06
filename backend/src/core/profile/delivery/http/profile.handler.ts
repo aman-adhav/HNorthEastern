@@ -1,7 +1,9 @@
-import { Handler, Router } from 'express';
+import { Handler, Request, Router } from 'express';
 import * as express from 'express';
+import * as boom from '@hapi/boom';
 
 import { asyncMiddleware } from '../../../../lib/middlewares/async';
+import { authMiddleware } from '../../../../lib/middlewares/auth';
 import * as domain from '../../../domain';
 
 import * as validation from './profile.validation';
@@ -12,21 +14,34 @@ export class ProfileHandler {
   router(): Router {
     const router = express.Router();
 
-    router.post('/', validation.create, asyncMiddleware(this.create));
+    router.post('/', authMiddleware, validation.create, asyncMiddleware(this.create));
     router.get('/:profileID', validation.get, asyncMiddleware(this.get));
-    router.put('/:profileID', validation.update, asyncMiddleware(this.update));
-    router.delete('/:profileID', validation.remove, asyncMiddleware(this.remove));
+    router.put('/:profileID', authMiddleware, validation.update, asyncMiddleware(this.update));
+    router.delete('/:profileID', authMiddleware, validation.remove, asyncMiddleware(this.remove));
 
     return router;
   }
 
-  create: Handler = async (req, res) => {
-    const profile = await this.service.create(req.body);
+  create: Handler = async (req: Request, res) => {
+    if (!req.user || !req.user.uid) throw boom.forbidden();
+
+    const profile = await this.service.create({ ...req.body, id: req.user.uid });
+    if (profile.socials.length) {
+      profile.socials.forEach((social) => {
+        delete social.image.uri;
+      });
+    }
+    delete profile.qr.uri;
     res.json(profile);
   };
 
   get: Handler = async (req, res) => {
     const profile = await this.service.get(req.params.profileID);
+    if (profile.socials.length) {
+      profile.socials.forEach((social) => {
+        delete social.image.uri;
+      });
+    }
     delete profile.qr.uri;
     res.status(201).json(profile);
   };

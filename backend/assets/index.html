@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Firebase auth test</title>
+    <script src="https://www.gstatic.com/firebasejs/7.15.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.0/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/4.5.1/firebase-ui-auth.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="https://www.gstatic.com/firebasejs/ui/4.5.1/firebase-ui-auth.css"
+    />
+    <script type="text/javascript">
+      function createUser(idToken) {
+        return axios({
+          method: 'POST',
+          url: 'http://localhost:8080/profiles',
+          data: {
+            name: 'Roman',
+            socials: [
+              {
+                type: 'github',
+                url: 'github.com',
+              },
+            ],
+          },
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        });
+      }
+
+      var firebaseConfig = {
+        apiKey: 'AIzaSyAQB7AeHJTfm3esqGDqC-ZD5Q3a4MGRAco',
+        authDomain: 'hacknortheastern-qrcodes.firebaseapp.com',
+        databaseURL: 'https://hacknortheastern-qrcodes.firebaseio.com',
+        projectId: 'hacknortheastern-qrcodes',
+        storageBucket: 'hacknortheastern-qrcodes.appspot.com',
+        messagingSenderId: '208488575117',
+        appId: '1:208488575117:web:73c22b2e9b5c48d87172c4',
+        measurementId: 'G-ENRMNB8L6G',
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      firebase.analytics();
+
+      var ui = new firebaseui.auth.AuthUI(firebase.auth());
+
+      var uiConfig = {
+        callbacks: {
+          signInSuccessWithAuthResult: function (authResult, redirectUrl) {
+            firebase
+              .auth()
+              .currentUser.getIdToken()
+              .then(async (idToken) => {
+                if (authResult.additionalUserInfo.isNewUser) {
+                  return createUser(idToken);
+                } else {
+                  // Get the user
+                  try {
+                    const response = await axios({
+                      method: 'GET',
+                      url: `http://localhost:8080/profiles/${authResult.user.uid}`,
+                    });
+                    return response;
+                  } catch (err) {
+                    console.log(err.response);
+                    if (err.response && err.response.status === 404) {
+                      // User needs to be created
+                      return createUser(idToken);
+                    }
+                  }
+                }
+              })
+              .then(({ data }) => {
+                console.log(data);
+                const img = document.createElement('img');
+                img.src = data.qr.url;
+                document.querySelector('#qrcode').appendChild(img);
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+
+            return false;
+          },
+        },
+
+        signInOptions: [
+          // Leave the lines as is for the providers you want to offer your users.
+          firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+          // firebase.auth.EmailAuthProvider.PROVIDER_ID,
+          { provider: firebase.auth.EmailAuthProvider.PROVIDER_ID, requireDisplayName: false },
+        ],
+        credentialHelper: 'none',
+
+        // tosUrl and privacyPolicyUrl accept either url string or a callback
+        // function.
+        // Terms of service url/callback.
+      };
+      ui.start('#firebaseui-auth-container', uiConfig);
+    </script>
+  </head>
+  <body>
+    <h1>Firebase auth test</h1>
+    <div id="firebaseui-auth-container"></div>
+    <div id="qrcode"></div>
+  </body>
+</html>

@@ -4,6 +4,14 @@ export const create = validate(
   {
     body: Joi.object({
       name: Joi.string().required(),
+      socials: Joi.array()
+        .items({
+          type: Joi.string()
+            .valid('github', 'facebook', 'snapchat', 'instagram', 'devpost', 'other')
+            .required(),
+          url: Joi.string().required(),
+        })
+        .max(5),
     }),
   },
   {},
@@ -25,12 +33,17 @@ export const update = validate(
       name: Joi.string(),
       created: Joi.date(),
       updated: Joi.date(),
-      socials: Joi.array().items({
-        type: Joi.string()
-          .valid('github', 'facebook', 'snapchat', 'instagram', 'devpost', 'other')
-          .required(),
-        url: Joi.string().required(),
-      }),
+      qr: Joi.object({ url: Joi.string().required() }),
+      socials: Joi.array()
+        .items({
+          type: Joi.string()
+            .valid('github', 'facebook', 'snapchat', 'instagram', 'devpost', 'other')
+            .required(),
+          image: Joi.object({
+            url: Joi.string().required(),
+          }),
+        })
+        .max(5),
     }),
   },
   {},
