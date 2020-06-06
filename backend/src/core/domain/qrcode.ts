@@ -26,4 +26,6 @@ export interface QRCodeRepository {
   create(id: string, data: Buffer): Promise<QRCode>;
 
   remove(id: string): Promise<void>;
+
+  exists(id: string): Promise<boolean>;
 }

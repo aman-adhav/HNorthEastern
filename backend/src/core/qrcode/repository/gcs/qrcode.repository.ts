@@ -14,6 +14,9 @@ export class QRCodeRepository implements domain.QRCodeRepository {
 
   async create(id: string, data: Buffer): Promise<domain.QRCode> {
     const file = this.bucket.file(`qrcodes/${id}`);
+    const exists = await file.exists();
+    if (exists[0]) throw boom.conflict();
+
     await file.save(data, { contentType: 'image/png' });
 
     return {
@@ -30,5 +33,11 @@ export class QRCodeRepository implements domain.QRCodeRepository {
       if (err.code === 404) throw boom.notFound();
       throw err;
     }
+  }
+
+  async exists(id: string): Promise<boolean> {
+    const file = this.bucket.file(`qrcodes/${id}`);
+    const exists = await file.exists();
+    return exists[0];
   }
 }
