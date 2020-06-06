@@ -4,6 +4,7 @@
 
 import { Handler, ErrorRequestHandler } from 'express';
 import * as boom from '@hapi/boom';
+import { ValidationError } from 'express-validation';
 
 import log from '../log';
 
@@ -22,12 +23,19 @@ export const errorDecorator: ErrorRequestHandler = (err, req, res, next) => {
     },
     data: {
       stack: err.stack || '',
+      data: err.data || {},
     },
   };
 
-  boom.boomify(err, options);
+  if (err instanceof ValidationError) {
+    if (err.details.body?.length) err.message = err.details.body[0].message;
+    else err.message = 'Invalid input';
+    options.statusCode = 400;
+  } else if (!err.isBoom) {
+    if (process.env.NODE_ENV === 'production') err.message = null;
+  }
 
-  if (!err.isBoom) delete err.output.payload.message;
+  boom.boomify(err, options);
 
   next(err);
 };
