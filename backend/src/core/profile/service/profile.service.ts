@@ -2,7 +2,7 @@ import * as boom from '@hapi/boom';
 
 import * as domain from '../../domain';
 
-import * as yeast from 'yeast';
+import * as domain from '../../domain';
 
 export class ProfileService implements domain.ProfileService {
   constructor(
