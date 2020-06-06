@@ -1,6 +1,6 @@
-import * as domain from '../../domain';
+import * as boom from '@hapi/boom';
 
-import * as yeast from 'yeast';
+import * as domain from '../../domain';
 
 export class ProfileService implements domain.ProfileService {
   constructor(
@@ -13,10 +13,9 @@ export class ProfileService implements domain.ProfileService {
   }
 
   async create(profile: domain.Profile): Promise<domain.Profile> {
-    profile.id = yeast();
     const qrcode = await this.qrcodeService.create(profile.id, `https://example.com/${profile.id}`);
     profile.qr = qrcode;
-    profile.socials = [];
+    if (!profile.socials) profile.socials = [];
     return this.repo.create(profile);
   }
 

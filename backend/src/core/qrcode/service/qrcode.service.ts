@@ -1,7 +1,8 @@
+import * as stream from 'stream';
+
 import * as qrcode from 'qrcode';
 import * as Jimp from 'jimp';
-
-import * as stream from 'stream';
+import * as boom from '@hapi/boom';
 
 import * as domain from '../../domain';
 
@@ -18,6 +19,7 @@ export class QRCodeService implements domain.QRCodeService {
   }
 
   async create(id: string, content: string): Promise<domain.QRCode> {
+    if (await this.repo.exists(id)) throw boom.conflict();
     if (!this.overlay) await this.init();
 
     let qr = Buffer.from([]);

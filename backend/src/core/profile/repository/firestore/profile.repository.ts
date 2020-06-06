@@ -20,6 +20,19 @@ export class ProfileRepository implements domain.ProfileRepository {
     this.socialRepository = socialRepository;
   }
 
+  private async getSocials(socials: domain.Profile['socials']): Promise<void> {
+    if (!socials.length) return;
+
+    const promises = [];
+    for (let i = 0; i < socials.length; i++) {
+      promises.push(this.socialRepository.get(socials[i].type));
+    }
+    const results = await Promise.all(promises);
+    for (let i = 0; i < results.length; i++) {
+      socials[i].image = results[i];
+    }
+  }
+
   async get(id: string): Promise<domain.Profile> {
     const doc = await this.coll.doc(id).get();
     if (!doc.exists) throw boom.notFound();
@@ -37,16 +50,7 @@ export class ProfileRepository implements domain.ProfileRepository {
     if (data.updated) profile.updated = (data.updated as Timestamp).toDate();
     if (data.socials.length) {
       const socials: domain.Profile['socials'] = data.socials;
-
-      const promises = [];
-      for (let i = 0; i < socials.length; i++) {
-        promises.push(await this.socialRepository.get(socials[i].type));
-      }
-      const results = await Promise.all(promises);
-      for (let i = 0; i < results.length; i++) {
-        socials[i].image = results[i];
-      }
-
+      await this.getSocials(socials);
       profile.socials = socials;
     }
 
@@ -56,7 +60,10 @@ export class ProfileRepository implements domain.ProfileRepository {
   async create(profile: domain.Profile): Promise<domain.Profile> {
     const data = { ...profile, created: FieldValue.serverTimestamp() };
 
+    delete data.id;
     await this.coll.doc(profile.id).set(data);
+
+    await this.getSocials(profile.socials);
 
     return { id: profile.id, name: profile.name, qr: profile.qr, socials: profile.socials };
   }
