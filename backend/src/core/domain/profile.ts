@@ -1,20 +1,38 @@
+import { QRCode } from './qrcode';
+import { Social } from './social';
+
 export interface Profile {
   id: string;
   name: string;
-  created: Date;
-  updated: Date;
+  qr: QRCode;
+  created?: Date;
+  updated?: Date;
+
+  socials: Social[];
 }
 
 export interface ProfileService {
   get(id: string): Promise<Profile>;
-  create(profile: Profile): Promise<string>;
+
+  /**
+   * @returns Promise that resolves to the id of the new profile
+   */
+  create(profile: Profile): Promise<Profile>;
+
   update(profile: Profile): Promise<void>;
-  delete(id: string): Promise<void>;
+
+  remove(id: string): Promise<void>;
 }
 
 export interface ProfileRepository {
   get(id: string): Promise<Profile>;
-  create(profile: Profile): Promise<string>;
+
+  /**
+   * @returns Promise that resolves to the id of the new profile
+   */
+  create(profile: Profile): Promise<Profile>;
+
   update(profile: Profile): Promise<void>;
-  delete(id: string): Promise<void>;
+
+  remove(id: string): Promise<void>;
 }

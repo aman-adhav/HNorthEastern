@@ -1,21 +1,32 @@
 import * as domain from '../../domain';
 
-export class ProfileService implements domain.ProfileService {
-  constructor(private repo: domain.ProfileRepository) {}
+import * as yeast from 'yeast';
 
-  get(id: string) {
+export class ProfileService implements domain.ProfileService {
+  constructor(
+    private repo: domain.ProfileRepository,
+    private qrcodeService: domain.QRCodeService
+  ) {}
+
+  get(id: string): Promise<domain.Profile> {
     return this.repo.get(id);
   }
 
-  create(profile: domain.Profile) {
+  async create(profile: domain.Profile): Promise<domain.Profile> {
+    profile.id = yeast();
+    const qrcode = await this.qrcodeService.create(profile.id, `https://example.com/${profile.id}`);
+    profile.qr = qrcode;
+    profile.socials = [];
     return this.repo.create(profile);
   }
 
-  update(profile: domain.Profile) {
+  update(profile: domain.Profile): Promise<void> {
     return this.repo.update(profile);
   }
 
-  delete(id: string) {
-    return this.repo.delete(id);
+  async remove(id: string): Promise<void> {
+    await this.qrcodeService.remove(id);
+
+    return this.repo.remove(id);
   }
 }
