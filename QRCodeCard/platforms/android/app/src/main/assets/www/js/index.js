@@ -1,3 +1,6 @@
+// const API_URL = 'http://localhost:8080';
+const API_URL = 'https://us-central1-hacknortheastern-qrcodes.cloudfunctions.net/api';
+
 var firebaseConfig = {
   apiKey: 'AIzaSyAQB7AeHJTfm3esqGDqC-ZD5Q3a4MGRAco',
   authDomain: 'hacknortheastern-qrcodes.firebaseapp.com',
@@ -57,7 +60,7 @@ var app = {
           console.log(user.uid);
           console.log(token);
           cordova.plugin.http.sendRequest(
-            `http://localhost:8080/profiles/${user.uid}`,
+            `${API_URL}/profiles/${user.uid}`,
             {
               method: 'get',
             },
@@ -167,7 +170,7 @@ function initCreate(page) {
       .then(async (idToken) => {
         token = idToken;
         cordova.plugin.http.sendRequest(
-          `http://localhost:8080/profiles`,
+          `${API_URL}/profiles`,
           {
             method: 'post',
             data: { name, email, description, phone, socials: [] },
@@ -292,7 +295,7 @@ function saveSocial(profile, accessToken) {
 
   return new Promise((resolve, reject) => {
     cordova.plugin.http.sendRequest(
-      `http://localhost:8080/profiles`,
+      `${API_URL}/profiles`,
       {
         method: 'put',
         data: profile,

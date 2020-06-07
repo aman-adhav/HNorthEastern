@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:8080';
+// const API_URL = 'http://localhost:8080';
+const API_URL = 'https://us-central1-hacknortheastern-qrcodes.cloudfunctions.net/api';
 
 var firebaseConfig = {
   apiKey: 'AIzaSyAQB7AeHJTfm3esqGDqC-ZD5Q3a4MGRAco',
