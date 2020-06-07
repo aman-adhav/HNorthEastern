@@ -4,8 +4,6 @@ import * as domain from '../../domain';
 
 import * as domain from '../../domain';
 
-import * as domain from '../../domain';
-
 export class ProfileService implements domain.ProfileService {
   constructor(
     private repo: domain.ProfileRepository,
