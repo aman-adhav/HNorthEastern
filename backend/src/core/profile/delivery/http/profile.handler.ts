@@ -16,8 +16,8 @@ export class ProfileHandler {
 
     router.post('/', authMiddleware, validation.create, asyncMiddleware(this.create));
     router.get('/:profileID', validation.get, asyncMiddleware(this.get));
-    router.put('/:profileID', authMiddleware, validation.update, asyncMiddleware(this.update));
-    router.delete('/:profileID', authMiddleware, validation.remove, asyncMiddleware(this.remove));
+    router.put('/', authMiddleware, validation.update, asyncMiddleware(this.update));
+    router.delete('/', authMiddleware, validation.remove, asyncMiddleware(this.remove));
 
     return router;
   }
@@ -47,13 +47,17 @@ export class ProfileHandler {
   };
 
   update: Handler = async (req, res) => {
-    const profile: domain.Profile = { id: req.params.profileID, ...req.body };
+    if (!req.user || !req.user.uid) throw boom.forbidden();
+
+    const profile: domain.Profile = { ...req.body, id: req.user.uid };
     await this.service.update(profile);
     res.sendStatus(204);
   };
 
   remove: Handler = async (req, res) => {
-    await this.service.remove(req.params.profileID);
+    if (!req.user || !req.user.uid) throw boom.forbidden();
+
+    await this.service.remove(req.user.uid);
     res.sendStatus(204);
   };
 }

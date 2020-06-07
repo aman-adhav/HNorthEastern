@@ -2,12 +2,15 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/bin/api/index.js",
+  "main": "dist/bin/cloud-function/index.js",
   "scripts": {
     "lint": "eslint --ext .ts src/ --color",
-    "start": "node dist/bin/api",
+    "start": "node dist/bin/cloud-function",
     "dev": "cross-env NODE_ENV=development ts-node-dev --no-notify ./src/bin/api/",
     "build": "rimraf dist/ && tsc"
+  },
+  "engines": {
+    "node": "10.x.x"
   },
   "keywords": [],
   "author": "",
