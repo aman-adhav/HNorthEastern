@@ -6,6 +6,7 @@
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
     },
     { "target": "qr-app", "public": "QRCodeCard/platforms/browser/www", "ignore": [] },
-    { "target": "qr-ar", "public": "website/public", "ignore": [] }
+    { "target": "qr-ar", "public": "website/public", "ignore": [] },
+    { "target": "qr-backup", "public": "website/backup_website/public", "ignore": [] }
   ]
 }

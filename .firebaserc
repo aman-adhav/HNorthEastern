@@ -13,6 +13,9 @@
         ],
         "qr-ar": [
           "pop-up-ar"
+        ],
+        "qr-backup": [
+          "qr-codes-backup"
         ]
       }
     }
