@@ -9,21 +9,255 @@
     <meta name="msapplication-tap-highlight" content="no" />
     <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover" />
 
-    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css" />
-    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css" />
-    <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
+    <!-- <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css" /> -->
+    <!-- <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css" /> -->
+    <!-- <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script> -->
 
-    <!-- <link rel="stylesheet" type="text/css" href="css/vendor/onsenui.min.css" /> -->
-    <!-- <link rel="stylesheet" type="text/css" href="css/vendor/onsen-css-components.min.css" /> -->
+    <link rel="stylesheet" type="text/css" href="css/vendor/onsenui.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/vendor/onsen-css-components.min.css" />
+    <link type="text/css" rel="stylesheet" href="css/vendor/firebase-ui-auth.css" />
     <link rel="stylesheet" type="text/css" href="css/index.css" />
-
-    <!-- <script type="text/javascript" src="js/vendor/onsenui.min.js"></script> -->
+    <link rel="stylesheet" type="text/css" href="css/user.css" />
+    <link rel="stylesheet" type="text/css" href="css/qrcode.css" />
+    <link rel="stylesheet" type="text/css" href="css/welcome.css" />
 
     <title>QRCode Card</title>
   </head>
   <body>
-    <ons-button onclick="alert('Hello World!')">Click Me</ons-button>
+    <ons-navigator id="navigator" swipeable page="loading.html"></ons-navigator>
+
+    <template id="welcome.html">
+      <ons-page id="welcome">
+        <div style="width: calc(100% - 32px); height: 100%; padding: 0 16px;">
+          <ons-row vertical-align="center" class="container">
+            <div
+              style="width: 100%; display: flex; justify-content: center; flex-direction: column;"
+            >
+              <ons-row>
+                <div
+                  id="firebaseui-auth-container"
+                  style="display: flex; width: 100%; justify-content: center;"
+                ></div>
+              </ons-row>
+              <ons-row>
+                <ons-col style="display: flex; width: 100%; justify-content: center;">
+                  <ons-button id="scancode">scan qr code</ons-button>
+                </ons-col>
+              </ons-row>
+            </div>
+          </ons-row>
+        </div>
+      </ons-page>
+    </template>
+
+    <template id="create.html">
+      <ons-page id="create">
+        <div style="padding: 16px;">
+          <div>
+            <h1>Let's create your account</h1>
+          </div>
+          <div>
+            <h3>Your display name:</h3>
+          </div>
+          <div style="width: 100%; margin-bottom: 16px;">
+            <ons-input
+              id="create-name-input"
+              style="width: 100%;"
+              modifier="underbar"
+              placeholder="Name"
+              float
+            ></ons-input>
+          </div>
+          <div>
+            <h3>Your email:</h3>
+          </div>
+          <div style="width: 100%; margin-bottom: 16px;">
+            <ons-input
+              id="create-email-input"
+              style="width: 100%;"
+              modifier="underbar"
+              placeholder="Email"
+              float
+            ></ons-input>
+          </div>
+          <div>
+            <h3>Your phone:</h3>
+          </div>
+          <div style="width: 100%; margin-bottom: 16px;">
+            <ons-input
+              id="create-phone-input"
+              style="width: 100%;"
+              modifier="underbar"
+              placeholder="Phone"
+              float
+            ></ons-input>
+          </div>
+          <div>
+            <h3>Your description:</h3>
+          </div>
+          <div style="width: 100%; margin-bottom: 16px;">
+            <ons-input
+              id="create-description-input"
+              style="width: 100%;"
+              modifier="underbar"
+              placeholder="Description"
+              float
+            ></ons-input>
+          </div>
+          <div style="width: 100%; text-align: right;">
+            <ons-button id="create-button">create</ons-button>
+          </div>
+        </div>
+      </ons-page>
+    </template>
+
+    <template id="socials-card-template">
+      <div class="socials-card card">
+        <div class="card__content">
+          <div class="socials-row">
+            <div class="socials-col-image">
+              <img class="socials-image" width="40px" height="auto" />
+            </div>
+            <div class="socials-col-input" style="overflow: hidden; max-width: calc(100% - 110px);">
+              <div
+                class="socials-input"
+                style="
+                  max-width: 100%;
+                  overflow: hidden;
+                  white-space: nowrap;
+                  text-overflow: ellipsis;
+                "
+              ></div>
+            </div>
+            <div class="socials-col-button">
+              <button class="socials-button-delete button-round button--quiet" modifier="quiet">
+                <i class="button-round-icon zmdi zmdi-delete"></i>
+                <!-- <ons-icon  icon="md-delete"></ons-icon> -->
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template id="user.html">
+      <ons-page id="user" class="hidden">
+        <div class="user-container">
+          <ons-row>
+            <h1>👋 Hello, <span id="text-name"></span></h1>
+          </ons-row>
+          <ons-row>
+            <h4>Your socials</h4>
+          </ons-row>
+          <div id="socials"></div>
+          <ons-row class="user-row">
+            <ons-col>
+              <ons-button id="user-socials-add" class="button-round">
+                <ons-icon class="button-round-icon" icon="md-plus"></ons-icon>
+              </ons-button>
+            </ons-col>
+            <ons-col style="text-align: right;">
+              <ons-button id="user-socials-save">save</ons-button>
+            </ons-col>
+          </ons-row>
+          <ons-row class="user-row">
+            <div style="text-align: right; width: 100%;">
+              <ons-button id="user-logout">logout</ons-button>
+            </div>
+          </ons-row>
+        </div>
+        <ons-bottom-toolbar class="socials-toolbar">
+          <ons-row class="socials-toolbar-row">
+            <ons-col class="socials-toolbar-col">
+              <ons-button id="user-qr-show" class="socials-toolbar-button" modifier="quiet">
+                display
+              </ons-button>
+            </ons-col>
+            <ons-col width="50%">
+              <ons-button id="user-qr-scan" class="socials-toolbar-button" modifier="quiet">
+                scan
+              </ons-button>
+            </ons-col>
+          </ons-row>
+        </ons-bottom-toolbar>
+      </ons-page>
+    </template>
+
+    <template id="user-socials-create.html">
+      <ons-dialog cancelable id="user-socials-create">
+        <div class="user-dialog-container">
+          <div class="user-dialog-title">
+            <span>Add an item</span>
+          </div>
+          <div style="margin-bottom: 16px;">
+            <ons-select id="user-dialog-type-input" modifier="underbar" style="width: 100%;">
+              <option value="devpost">devpost</option>
+              <option value="facebook">facebook</option>
+              <option value="github">github</option>
+              <option value="instagram">instagram</option>
+              <option value="snapchat">snapchat</option>
+              <option value="other">other</option>
+            </ons-select>
+          </div>
+          <div>
+            <ons-input
+              id="user-dialog-url-input"
+              style="width: 100%;"
+              modifier="underbar"
+              placeholder="http://..."
+              float
+            ></ons-input>
+          </div>
+          <ons-row class="user-dialog-buttons">
+            <ons-button id="user-dialog-button-cancel" modifier="quiet">
+              cancel
+            </ons-button>
+            <ons-button id="user-dialog-button-add" modifier="quiet">
+              add
+            </ons-button>
+          </ons-row>
+        </div>
+      </ons-dialog>
+    </template>
+
+    <template id="qrcode.html">
+      <ons-page id="qrcode">
+        <div class="qr-container">
+          <div id="qrcode-image"></div>
+        </div>
+        <ons-fab id="qr-close" position="bottom right">
+          <ons-icon icon="md-close"></ons-icon>
+        </ons-fab>
+      </ons-page>
+    </template>
+
+    <template id="scan.html">
+      <ons-page id="scan">
+        <ons-fab id="scan-close" position="bottom right">
+          <ons-icon icon="md-close"></ons-icon>
+        </ons-fab>
+      </ons-page>
+    </template>
+
+    <template id="loading.html">
+      <ons-page id="loading">
+        <link rel="stylesheet" type="text/css" href="css/loading.css" />
+
+        <ons-row class="wrapper">
+          <ons-col class="container">
+            <ons-progress-circular indeterminate class="loader"></ons-progress-circular>
+          </ons-col>
+        </ons-row>
+      </ons-page>
+    </template>
+
     <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/vendor/onsenui.min.js"></script>
+    <script src="js/vendor/firebase-app.js"></script>
+    <script src="js/vendor/firebase-analytics.js"></script>
+    <script src="js/vendor/firebase-auth.js"></script>
+    <script src="js/vendor/firebase-ui-auth.js"></script>
+    <script src="js/vendor/axios.min.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
   </body>
 </html>
