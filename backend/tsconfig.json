@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "lib": ["es2018", "DOM"],
+    "target": "es2018",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node"
+  }
+}
