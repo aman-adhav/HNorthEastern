@@ -1,11 +1,11 @@
 import 'dotenv-flow/config';
 
-import app from './app';
+import app from '../app';
 import log from '../../lib/log';
 
 const PORT = process.env.PORT || 8080;
 
-app
+app()
   .then((express) => {
     express.listen(PORT, () => log.info(`🚀 server started at http://localhost:${PORT}`));
   })
