@@ -15,9 +15,7 @@ export class QRCodeRepository implements domain.QRCodeRepository {
   async create(id: string, data: Buffer): Promise<domain.QRCode> {
     const file = this.bucket.file(`qrcodes/${id}`);
     const exists = await file.exists();
-    if (exists[0]) throw boom.conflict();
-
-    await file.save(data, { contentType: 'image/png' });
+    if (!exists[0]) await file.save(data, { contentType: 'image/png' });
 
     return {
       url: `https://storage.googleapis.com/${this.bucket.name}/${file.name}`,

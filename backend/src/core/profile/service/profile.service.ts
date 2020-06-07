@@ -13,7 +13,11 @@ export class ProfileService implements domain.ProfileService {
   }
 
   async create(profile: domain.Profile): Promise<domain.Profile> {
-    const qrcode = await this.qrcodeService.create(profile.id, `https://example.com/${profile.id}`);
+    const qrcode = await this.qrcodeService.create(
+      profile.id,
+      `https://example.com/?val=${profile.id}`
+    );
+    // const qrcode = await this.qrcodeService.create(profile.id, `https://example.com/${profile.id}`);
     profile.qr = qrcode;
     if (!profile.socials) profile.socials = [];
     return this.repo.create(profile);
