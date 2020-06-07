@@ -4,20 +4,16 @@ import * as cors from 'cors';
 import { Firestore } from '@google-cloud/firestore';
 import { Storage } from '@google-cloud/storage';
 
-import {
-  notFoundErrorHandler,
-  errorDecorator,
-  finalErrorHandler,
-} from '../../lib/middlewares/error';
+import { notFoundErrorHandler, errorDecorator, finalErrorHandler } from '../lib/middlewares/error';
 
-import { QRCodeService } from '../../core/qrcode/service/qrcode.service';
-import { QRCodeRepository } from '../../core/qrcode/repository/gcs/qrcode.repository';
+import { QRCodeService } from '../core/qrcode/service/qrcode.service';
+import { QRCodeRepository } from '../core/qrcode/repository/gcs/qrcode.repository';
 
-import { SocialRepository } from '../../core/social/repository/firestore/social.repository';
+import { SocialRepository } from '../core/social/repository/firestore/social.repository';
 
-import { ProfileService } from '../../core/profile/service/profile.service';
-import { ProfileRepository } from '../../core/profile/repository/firestore/profile.repository';
-import { ProfileHandler } from '../../core/profile/delivery/http/profile.handler';
+import { ProfileService } from '../core/profile/service/profile.service';
+import { ProfileRepository } from '../core/profile/repository/firestore/profile.repository';
+import { ProfileHandler } from '../core/profile/delivery/http/profile.handler';
 
 const firestore = new Firestore();
 const storage = new Storage();
@@ -55,4 +51,4 @@ const init = async (): Promise<express.Express> => {
   return app;
 };
 
-export default init();
+export default init;
