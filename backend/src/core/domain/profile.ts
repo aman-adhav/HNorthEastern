@@ -4,6 +4,9 @@ import { Social } from './social';
 export interface Profile {
   id: string;
   name: string;
+  email: string;
+  description: string;
+  phone: string;
   qr: QRCode;
   created?: Date;
   updated?: Date;

@@ -42,6 +42,9 @@ export class ProfileRepository implements domain.ProfileRepository {
     const profile: domain.Profile = {
       id: doc.id,
       name: data.name,
+      phone: data.phone,
+      email: data.email,
+      description: data.description,
       qr: data.qr,
       created: (data.created as Timestamp).toDate(),
       socials: [],
@@ -65,7 +68,15 @@ export class ProfileRepository implements domain.ProfileRepository {
 
     await this.getSocials(profile.socials);
 
-    return { id: profile.id, name: profile.name, qr: profile.qr, socials: profile.socials };
+    return {
+      id: profile.id,
+      name: profile.name,
+      description: profile.description,
+      phone: profile.phone,
+      email: profile.email,
+      qr: profile.qr,
+      socials: profile.socials,
+    };
   }
 
   async update(profile: domain.Profile): Promise<void> {

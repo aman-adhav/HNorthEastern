@@ -19,7 +19,7 @@ export class QRCodeService implements domain.QRCodeService {
   }
 
   async create(id: string, content: string): Promise<domain.QRCode> {
-    if (await this.repo.exists(id)) throw boom.conflict();
+    // if (await this.repo.exists(id)) throw boom.conflict();
     if (!this.overlay) await this.init();
 
     let qr = Buffer.from([]);
