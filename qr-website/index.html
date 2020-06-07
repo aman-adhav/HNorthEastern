@@ -1,23 +1,60 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+<!doctype HTML>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    </head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <body style='margin : 0px; overflow: hidden;'>
+      <div class="title">
+      </div>
+      <h2>Personal Links</h2>
+      <ul>
+      </ul>
+      <div class="description">
+        </div>
+      <h2>Contacts & Other Links </h2>
+      <ul>
+      </ul>
+      <h1><bold>Looks pretty drab doesn't it? Download our APP today to view all features!</bold></h1>
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+    </body>
+    <script>
+    let querystring = window.location.search.substring(1);
+    querystring = querystring.replace("val=", "");
+    console.log(querystring);
+    try {
+        $(document).ready(function(){
+          $.ajax({
+              url: "https://us-central1-hacknortheastern-qrcodes.cloudfunctions.net/api/profiles/" + querystring,
+              type: "GET",
+              contentType: "application/json; charset=utf-8",
+              dataType: "json",
+              success: function (data, textStatus, jqXHR) {
+                  json = JSON.stringify(data);
+                  data = JSON.parse(json);
+                  console.log(data);
+                  var temp = document.getElementsByTagName('div')[0];
+                  temp.innerHTML += '<h1>'+ data["name"] +'</h1>';
 
-# testing
-/coverage
+                  var temp = document.getElementsByTagName('div')[1];
+                  temp.innerHTML += '<p>'+ data["email"] +'</p>';
 
-# production
-/build
+                  var temp = document.getElementsByTagName('ul')[1];
+                  temp.innerHTML += '<li>' + data["phone_number"] + '</li>';
 
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+                  for (i = 0; i < data['socials'].length; i++) {
+                    if (data['socials'][i]["type"] == "github" || data['socials'][i]["type"] == "facebook"|| data['socials'][i]["type"] == 'snapchat'||data['socials'][i]["type"] == 'instagram'||data['socials'][i]["type"] == 'devpost'||data['socials'][i]["type"] == 'other'){
+                      var temp = document.getElementsByTagName('ul')[0];
+                      temp.innerHTML += '<li>' + data['socials'][i]["url"] + '</li>';
+                    }
+                  }
+              }
+          })
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+        })
+      }catch (err) {
+          alert(err);
+        }
+
+  </script>
+</html>
