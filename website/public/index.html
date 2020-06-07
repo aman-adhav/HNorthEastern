@@ -129,17 +129,13 @@
       scanner.addListener('scan', function (content) {
         var json_url = content;
         console.log(content);
-        var obj = {
-          "key": "value",
-          "key2": "value2"
-        };
-        var data = JSON.stringify(obj);
-        var json = "";
+        let querystring = json_url.split('?');
+        querystring = querystring[1].replace("val=", "");
+
         $(document).ready(function(){
           $.ajax({
-              url: "http://localhost:5002/index",
+              url: "https://us-central1-hacknortheastern-qrcodes.cloudfunctions.net/api/profiles/"+querystring,
               type: "GET",
-              data: data,
               contentType: "application/json; charset=utf-8",
               dataType: "json",
               success: function (data, textStatus, jqXHR) {
@@ -154,49 +150,65 @@
                     $(remove_).remove();
                     remove_ = a = document.getElementsByTagName('img');
                     $(remove_).remove();
-                    for (i = 0; i < data.length; i++) {
+                    var soc_i = 0;
+                    var iDiv = document.createElement("img");
 
-                      if (data[i]["type"] == "link"){
+                    iDiv.id = "user_photo";
+                    iDiv.src = "https://dreamincodeforlife.github.io/AR-BusinessCard/img/github.png";
+                    iDiv.crossOrigin = "anonymous";
+                    document.getElementsByTagName('a-assets')[0].appendChild(iDiv);
+                    var position_vec = "0 1 -5.5";
+                    var temp = document.getElementsByTagName('a-marker')[0];
+                    temp.innerHTML += '<a-image id="user_photo"' + '  scale="1 1 1" position="'+position_vec +'" rotation="-90 0 0" crossOrigin="anonymous" width="3" height="3" src=' + "https://dreamincodeforlife.github.io/AR-BusinessCard/img/github.png" + '></a-image>';
+
+
+                    var iDiv = document.createElement("a-mixin");
+                    iDiv.id = "name";
+                    iDiv.setAttribute("text", "align: center; width: 8; font: https://cdn.aframe.io/fonts/KelsonSans.fnt; value: " + data["name"]);
+                    iDiv.crossOrigin = "anonymous";
+                    document.getElementsByTagName('a-assets')[0].appendChild(iDiv);
+                    var iDiv = document.createElement("a-mixin");
+                    iDiv.id = "title";
+                    iDiv.setAttribute("text", "align: center; width: 5; font: https://cdn.aframe.io/fonts/KelsonSans.fnt; value: " + data["description"]);
+                    iDiv.crossOrigin = "anonymous";
+                    document.getElementsByTagName('a-assets')[0].appendChild(iDiv);
+                    var temp = document.getElementsByTagName('a-marker')[0];
+                    temp.innerHTML += '<a-text mixin="name" position="0 1 -3.5" wrap-count="30" rotation="-90 0 0" color="white"></a-text>';
+                    temp.innerHTML += '<a-text mixin="title" position="0 1 -2.5" wrap-count="30" rotation="-90 0 0" color="white"></a-text>';
+
+                    var iDiv = document.createElement("img");
+                    iDiv.id = "contact_link1";
+                    iDiv.src = "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-email-512.png";
+                    iDiv.crossOrigin = "anonymous";
+                    document.getElementsByTagName('a-assets')[0].appendChild(iDiv);
+                    var position_vec = '-5.5 1 ' +(-5 + (2.2* 1));
+                    var temp = document.getElementsByTagName('a-marker')[1];
+                    temp.innerHTML += '<a-image id="contact' + "1" + '" url=' + "mailto:" + data["email"] + '  scale="1.5 1.5 1.5" position="'+position_vec +'" rotation="-90 0 0" crossOrigin="anonymous" width="1.2" height="1.2" src=' + "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-email-512.png" + '></a-image>';
+
+                    var iDiv = document.createElement("img");
+                    iDiv.id = "contact_link2";
+                    iDiv.src = "https://cdn1.iconfinder.com/data/icons/free-98-icons/32/call-512.png";
+                    iDiv.crossOrigin = "anonymous";
+                    document.getElementsByTagName('a-assets')[0].appendChild(iDiv);
+                    var position_vec = '-5.5 1 ' +(-5 + (2.2* 2));
+                    var temp = document.getElementsByTagName('a-marker')[1];
+                    temp.innerHTML += '<a-image id="contact' + "2" + '" url=' + "tel:" + data["phone"] + '  scale="1.5 1.5 1.5" position="'+position_vec +'" rotation="-90 0 0" crossOrigin="anonymous" width="1.2" height="1.2" src=' + "https://cdn1.iconfinder.com/data/icons/free-98-icons/32/call-512.png" + '></a-image>';
+
+                    for (i = 0; i < data["socials"].length; i++) {
+
+                      if (data['socials'][i]["type"] == "github" || data['socials'][i]["type"] == "facebook"|| data['socials'][i]["type"] == 'snapchat'||data['socials'][i]["type"] == 'instagram'||
+                      data['socials'][i]["type"] == 'devpost'|| data['socials'][i]["type"] == 'other'){
                         var iDiv = document.createElement("img");
-                        iDiv.id = data[i]["id"];
-                        iDiv.src = data[i]["logo_url"];
+                        soc_i += 1;
+                        iDiv.id = soc_i;
+                        iDiv.src = data['socials'][i]["image"]["url"];
                         iDiv.crossOrigin = "anonymous";
                         document.getElementsByTagName('a-assets')[0].appendChild(iDiv);
-                        var position_vec = '5.5 1 ' +(-5 + (2.2*data[i]["id"]))
+                        var position_vec = '5.5 1 ' +(-5 + (2.2*soc_i))
                         var temp = document.getElementsByTagName('a-marker')[1];
-                        temp.innerHTML += '<a-image id="animated-model' + data[i]["id"]+ '" url=' +data[i]["url"] + '  scale="1.5 1.5 1.5" position="'+position_vec +'" rotation="-90 0 0" crossOrigin="anonymous" width="1.2" height="1.2" src=' + data[i]["logo_url"] + '></a-image>';
-                      } else if (data[i]["type"] == "user_photo"){
-                        var iDiv = document.createElement("img");
-                        iDiv.id = "user_photo";
-                        iDiv.src = data[i]["logo_url"];
-                        iDiv.crossOrigin = "anonymous";
-                        document.getElementsByTagName('a-assets')[0].appendChild(iDiv);
-                        var position_vec = "0 1 -5.5";
-                        var temp = document.getElementsByTagName('a-marker')[0];
-                        temp.innerHTML += '<a-image id="user_photo"' + '  scale="1 1 1" position="'+position_vec +'" rotation="-90 0 0" crossOrigin="anonymous" width="3" height="3" src=' + data[i]["logo_url"] + '></a-image>';
-                      } else if (data[i]["type"] == "title"){
-                        var iDiv = document.createElement("a-mixin");
-                        iDiv.id = "name";
-                        iDiv.setAttribute("text", "align: center; width: 8; font: https://cdn.aframe.io/fonts/KelsonSans.fnt; value: " + data[i]["name"]);
-                        iDiv.crossOrigin = "anonymous";
-                        document.getElementsByTagName('a-assets')[0].appendChild(iDiv);
-                        var iDiv = document.createElement("a-mixin");
-                        iDiv.id = "title";
-                        iDiv.setAttribute("text", "align: center; width: 5; font: https://cdn.aframe.io/fonts/KelsonSans.fnt; value: " + data[i]["title"]);
-                        iDiv.crossOrigin = "anonymous";
-                        document.getElementsByTagName('a-assets')[0].appendChild(iDiv);
-                        var temp = document.getElementsByTagName('a-marker')[0];
-                        temp.innerHTML += '<a-text mixin="name" position="0 1 -3.5" wrap-count="30" rotation="-90 0 0" color="white"></a-text>';
-                        temp.innerHTML += '<a-text mixin="title" position="0 1 -2.5" wrap-count="30" rotation="-90 0 0" color="white"></a-text>';
+                        temp.innerHTML += '<a-image id="animated-model' + soc_i+ '" url=' +data['socials'][i]["url"] + '  scale="1.5 1.5 1.5" position="'+position_vec +'" rotation="-90 0 0" crossOrigin="anonymous" width="1.2" height="1.2" src=' + data['socials'][i]["image"]["url"] + '></a-image>';
                       } else if (data[i]["type"] == "contact_link"){
-                        var iDiv = document.createElement("img");
-                        iDiv.id = "contact_link" + data[i]["id"];
-                        iDiv.src = data[i]["logo_url"];
-                        iDiv.crossOrigin = "anonymous";
-                        document.getElementsByTagName('a-assets')[0].appendChild(iDiv);
-                        var position_vec = '-5.5 1 ' +(-5 + (2.2*data[i]["id"]));
-                        var temp = document.getElementsByTagName('a-marker')[1];
-                        temp.innerHTML += '<a-image id="contact' + data[i]["id"] + '" url=' +data[i]["url"] + '  scale="1.5 1.5 1.5" position="'+position_vec +'" rotation="-90 0 0" crossOrigin="anonymous" width="1.2" height="1.2" src=' + data[i]["logo_url"] + '></a-image>';
+
                       }else if (data[i]["type"] == "header"){
                         var iDiv = document.createElement("img");
                         iDiv.id = "asset";
