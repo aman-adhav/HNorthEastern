@@ -1,5 +1,5 @@
 export interface Social {
-  type: 'github' | 'facebook' | 'snapchat' | 'instagram' | 'other';
+  type: 'github' | 'facebook' | 'snapchat' | 'instagram' | 'devpost' | 'other';
   image: { url: string; uri: string };
   url: string;
 }
