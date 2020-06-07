@@ -205,6 +205,36 @@
                         document.getElementsByTagName('a-assets')[0].appendChild(iDiv);
                         var temp = document.getElementsByTagName('a-marker')[0];
                         temp.innerHTML +='<a-entity geometry="primitive:plane;width:7;height:3.5;" position="0 1 -9" rotation="-90 0 0" material="shader:gif;src:#asset;alphaTest:0.5;"></a-entity>';
+                      }else if (data[i]["type"] == "description"){
+                        var iDiv = document.createElement("a-mixin");
+                        iDiv.id = "des-text";
+                        iDiv.setAttribute("text", "align: left; width: 8; font: https://cdn.aframe.io/fonts/KelsonSans.fnt; value: " + data[i]["description_text"]);
+                        iDiv.crossOrigin = "anonymous";
+                        document.getElementsByTagName('a-assets')[0].appendChild(iDiv);
+
+                        var iDiv = document.createElement("a-mixin");
+                        iDiv.id = "org";
+                        iDiv.setAttribute("text", "align: left; width: 8; font: https://cdn.aframe.io/fonts/KelsonSans.fnt; value: " + data[i]["add_org"]);
+                        iDiv.crossOrigin = "anonymous";
+                        document.getElementsByTagName('a-assets')[0].appendChild(iDiv);
+
+                        var iDiv = document.createElement("a-mixin");
+                        iDiv.id = "org-des";
+                        iDiv.setAttribute("text", "align: left; width: 6; font: https://cdn.aframe.io/fonts/KelsonSans.fnt; value: " + data[i]["add_org_description"]);
+                        iDiv.crossOrigin = "anonymous";
+                        document.getElementsByTagName('a-assets')[0].appendChild(iDiv);
+
+                        var iDiv = document.createElement("img");
+                        iDiv.id = "org-icon";
+                        iDiv.src = data[i]["add_org_icon"];
+                        iDiv.crossOrigin = "anonymous";
+                        document.getElementsByTagName('a-assets')[0].appendChild(iDiv);
+
+                        var temp = document.getElementsByTagName('a-marker')[0];
+                        temp.innerHTML += '<a-text mixin="des-text" position="-4 1 0" wrap-count="60" rotation="-90 0 0" color="white"></a-text>';
+                        temp.innerHTML += '<a-text mixin="org" position="-4 1 1.5" wrap-count="30" rotation="-90 0 0" color="white"></a-text>';
+                        temp.innerHTML += '<a-image id="org_id"' + '  scale="1 1 1" position="'+"-3.8 1 3.5" +'" rotation="-90 0 0" crossOrigin="anonymous" width="1.5" height="1.5" src=' + data[i]["add_org_icon"] + '></a-image>';
+                        temp.innerHTML += '<a-text mixin="org-des" position="'+"-2.5 1 3.5" +'wrap-count="25" rotation="-90 0 0" color="white"></a-text>';
                       }
 
                     }
